@@ -45,10 +45,6 @@ Bashrc
 ```
 apt-get update
 apt-get install isc-dhcp-server -y
-
-echo ‘
-INTERFACES=”eth0”
-‘ > /etc/default/isc-dhcp-server
 ```
 - (Proxy Server) Berlint
 network configuration
