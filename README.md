@@ -275,7 +275,7 @@ service squid restart
 ```
 - Export http pada client
 ```
-export http_proxy="http://192.176.2.3:8080"
+export http_proxy="http://10.5.2.3:8080"
 ```
 
 Melakukan testing untuk validasi kode
@@ -286,10 +286,11 @@ Melakukan testing untuk validasi kode
   ```
   - Mencoba koneksi
   ```
-  wget google.com
+  lynx google.com
   ```
   - Menampilkan hasil koneksi ditolak
-  ```Lampirkan gambar```
+  ![proxy1 1](https://user-images.githubusercontent.com/72547769/202528883-5d053cf2-8633-4f6a-b66d-cc7657e546cd.png)
+  ![proxy1 2](https://user-images.githubusercontent.com/72547769/202529078-38036bf9-b608-405a-8eea-c4a23e4aeec1.png)
 
 - Testing non hari kerja
   - Menset jam dan mengganti dengan bukan jam kerja
@@ -301,7 +302,7 @@ Melakukan testing untuk validasi kode
   lynx http://its.ac.id
   ```
   - Menampilkan hasil koneksi diterima
-  ```Lampirkan gambar```
+  ![proxy1 3](https://user-images.githubusercontent.com/72547769/202529442-5021fc4d-6dc0-4f64-b526-a85d576f04b7.png)
 
 
 ### 2. Adapun pada hari dan jam kerja sesuai nomor (1), client hanya dapat mengakses domain loid-work.com dan franky-work.com (IP tujuan domain dibebaskan)
@@ -309,35 +310,36 @@ Jawab:
 
 - Buat domain pada wise
 ```
-mkdir /etc/bind/jarkom3
+mkdir /etc/bind/jarkom
+
 echo '
 zone "loid-work.com" {
         type master;
-        file "/etc/bind/jarkom3/loid-work.com";
+        file "/etc/bind/jarkom/loid-work.com";
 };' > /etc/bind/named.conf.local
-
-echo '
-;
-; BIND data file for local loopback interface
-;
-$TTL    604800
-@       IN      SOA     loid-work.com. root.loid-work.com. (
-                        2022110901      ; Serial
-                         604800         ; Refresh
-                          86400         ; Retry
-                        2419200         ; Expire
-                         604800 )       ; Negative Cache TTL
-;
-@       IN      NS      loid-work.com.
-@       IN      A       10.5.2.2
-@     IN      AAAA   ::1
-' > /etc/bind/jarkom3/loid-work.com
 
 echo '
 zone "franky-work.com" {
         type master;
-        file "/etc/bind/jarkom3/franky-work.com";
+        file "/etc/bind/jarkom/franky-work.com";
 };' >>/etc/bind/named.conf.local
+
+echo "
+options {
+        directory \"/var/cache/bind\";
+
+        forwarders {
+                8.8.8.8;
+                8.8.8.4;
+        };
+
+        // dnssec-validation auto;
+        allow-query { any; };
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+};
+" > /etc/bind/named.conf.options
+service bind9 restart
 
 echo '
 ;
@@ -345,7 +347,7 @@ echo '
 ;
 $TTL    604800
 @       IN      SOA     franky-work.com. root.franky-work.com. (
-                        2022110901      ; Serial
+                              2         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
                         2419200         ; Expire
@@ -353,11 +355,27 @@ $TTL    604800
 ;
 @       IN      NS      franky-work.com.
 @       IN      A       10.5.2.2
-@     IN      AAAA   ::1
-' > /etc/bind/jarkom3/franky-work.com
+@       IN      AAAA    ::1 ' > /etc/bind/jarkom/franky-work.com
+
+echo '
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     loid-work.com. root.loid-work.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      loid-work.com.
+@       IN      A       10.5.2.2
+@       IN      AAAA    ::1 ' > /etc/bind/jarkom/loid-work.com
+
 service bind9 restart
 ```
-- (Berlint) Membuat file /etc/squid/access.acl
+- (Berlint) Membuat file `/etc/squid/access.acl`
 ```
 nano /etc/squid/access.acl
 ```
@@ -391,7 +409,9 @@ visible_hostname Berlint
     lynx loid-work.com
     ```
     - Koneksi diterima namun menampilkan hasil berikut, karena site belum diavailable
-    ```lampirkan gambar```
+    ![proxy2 1](https://user-images.githubusercontent.com/72547769/202531807-03202e30-b60e-41a8-82a1-a3428d1c7238.png)
+
+
   - Testing non hari kerja
     - Menset jam dan mengganti dengan bukan jam kerja
     ```
@@ -402,7 +422,8 @@ visible_hostname Berlint
     lynx loid-work.com
     ```
     - Koneksi ditolak dan menampilkan hasil
-    ```lampirkan gambar```
+    ![proxy1 1](https://user-images.githubusercontent.com/72547769/202531309-65cb35ef-2ec3-4a8e-8870-e2ebbb795575.png)
+
 
 
 ### 3. Saat akses internet dibuka, client dilarang untuk mengakses web tanpa HTTPS. (Contoh web HTTP: http://example.com)
@@ -425,18 +446,19 @@ Melakukan testing untuk validasi kode
 - Melakukan dengan HTTP
   - Mencoba koneksi
   ```
-  lynx http://example.com
+  lynx http://its.ac.id
   ```
   - Koneksi ditolak karena bukan HTTPS
-  ```lampirkan gambar```
+  ![proxy1 1](https://user-images.githubusercontent.com/72547769/202531309-65cb35ef-2ec3-4a8e-8870-e2ebbb795575.png)
   
 - Melakukan dengan HTTPS
   - Mencoba koneksi
   ```
-  lynx https://example.com
+  lynx https://its.ac.id
   ```
   - Koneksi diterima karena HTTPS
-  ```lampirkan gambar```
+  ![proxy3 2](https://user-images.githubusercontent.com/72547769/202534853-0017c22c-5b60-4bfc-98b3-8a51446c57cd.png)
+
 
 
 ### 4. Agar menghemat penggunaan, akses internet dibatasi dengan kecepatan maksimum 128 Kbps pada setiap host (Kbps = kilobit per second; lakukan pengecekan pada tiap host, ketika 2 host akses internet pada saat bersamaan, keduanya mendapatkan speed maksimal yaitu 128 Kbps)
@@ -467,9 +489,11 @@ include /etc/squid/acl-bandwidth.conf
 ```
 - Melakukan test
   - Dengan pembatasan speed
-  ```lampirkan gambar```
+  ![proxy4 1](https://user-images.githubusercontent.com/72547769/202535907-238f5476-e1a7-4c75-8da5-c86a14c0b60d.png)
+
   - Tanpa pembatasan speed
-  ```lampirkan gambar```
+  ![proxy4 2](https://user-images.githubusercontent.com/72547769/202535913-0be52600-d8e5-4522-a87f-7a41de172d4b.png)
+
 
 
 ### 5. Setelah diterapkan, ternyata peraturan nomor (4) mengganggu produktifitas saat hari kerja, dengan demikian pembatasan kecepatan hanya diberlakukan untuk pengaksesan internet pada hari libur
