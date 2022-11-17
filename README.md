@@ -14,52 +14,36 @@ Link : https://docs.google.com/document/d/1asm7lgnTJxr17DxsE_McdUimPsRjesi6ZrHRp
 ## Topologi
 
 ## Pembahasan Soal DHCP
-### Soal 1
-Loid bersama Franky berencana membuat peta tersebut dengan kriteria WISE sebagai DNS Server, Westalis sebagai DHCP Server, Berlint sebagai Proxy Server
-
+### 1. Loid bersama Franky berencana membuat peta tersebut dengan kriteria WISE sebagai DNS Server, Westalis sebagai DHCP Server, Berlint sebagai Proxy Server
 Jawab:
 
 
-### Soal 2
-Ostania sebagai DHCP Relay
-
+### 2. Ostania sebagai DHCP Relay
 Jawab:
 
 
-### Soal 3
-Ada beberapa kriteria yang ingin dibuat oleh Loid dan Franky, yaitu: Semua client yang ada HARUS menggunakan konfigurasi IP dari DHCP Server. Client yang melalui Switch1 mendapatkan range IP dari [prefix IP].1.50 - [prefix IP].1.88 dan [prefix IP].1.120 - [prefix IP].1.155 
-
+### 3. Ada beberapa kriteria yang ingin dibuat oleh Loid dan Franky, yaitu: Semua client yang ada HARUS menggunakan konfigurasi IP dari DHCP Server. Client yang melalui Switch1 mendapatkan range IP dari [prefix IP].1.50 - [prefix IP].1.88 dan [prefix IP].1.120 - [prefix IP].1.155 
 Jawab:
 
 
-### Soal 4
-Client yang melalui Switch3 mendapatkan range IP dari [prefix IP].3.10 - [prefix IP].3.30 dan [prefix IP].3.60 - [prefix IP].3.85
-
+### 4. Client yang melalui Switch3 mendapatkan range IP dari [prefix IP].3.10 - [prefix IP].3.30 dan [prefix IP].3.60 - [prefix IP].3.85
 Jawab:
 
 
-### Soal 5
-Client mendapatkan DNS dari WISE dan client dapat terhubung dengan internet melalui DNS tersebut.
-
+### 5. Client mendapatkan DNS dari WISE dan client dapat terhubung dengan internet melalui DNS tersebut.
 Jawab:
 
 
-### Soal 6
-Lama waktu DHCP server meminjamkan alamat IP kepada Client yang melalui Switch1 selama 5 menit sedangkan pada client yang melalui Switch3 selama 10 menit. Dengan waktu maksimal yang dialokasikan untuk peminjaman alamat IP selama 115 menit.
-
+### 6. Lama waktu DHCP server meminjamkan alamat IP kepada Client yang melalui Switch1 selama 5 menit sedangkan pada client yang melalui Switch3 selama 10 menit. Dengan waktu maksimal yang dialokasikan untuk peminjaman alamat IP selama 115 menit.
 Jawab:
 
 
-### Soal 7
-Loid dan Franky berencana menjadikan Eden sebagai server untuk pertukaran informasi dengan alamat IP yang tetap dengan IP [prefix IP].3.13
-
+### 7. Loid dan Franky berencana menjadikan Eden sebagai server untuk pertukaran informasi dengan alamat IP yang tetap dengan IP [prefix IP].3.13
 Jawab:
 
 
 ## Pembahasan Soal Proxy Server
-### Soal 1
-Client hanya dapat mengakses internet diluar (selain) hari & jam kerja (senin-jumat 08.00 - 17.00) dan hari libur (dapat mengakses 24 jam penuh)
-
+### 1. Client hanya dapat mengakses internet diluar (selain) hari & jam kerja (senin-jumat 08.00 - 17.00) dan hari libur (dapat mengakses 24 jam penuh)
 Jawab:
 
 Melakukan perintah pada node Berlint:
@@ -122,10 +106,9 @@ Melakukan testing untuk validasi kode
   ```Lampirkan gambar```
 
 
-### Soal 2
-Adapun pada hari dan jam kerja sesuai nomor (1), client hanya dapat mengakses domain loid-work.com dan franky-work.com (IP tujuan domain dibebaskan)
-
+### 2. Adapun pada hari dan jam kerja sesuai nomor (1), client hanya dapat mengakses domain loid-work.com dan franky-work.com (IP tujuan domain dibebaskan)
 Jawab:
+
 - Buat domain pada wise
 ```
 mkdir /etc/bind/jarkom3
@@ -224,9 +207,7 @@ visible_hostname Berlint
     ```lampirkan gambar```
 
 
-### Soal 3
-Saat akses internet dibuka, client dilarang untuk mengakses web tanpa HTTPS. (Contoh web HTTP: http://example.com)
-
+### 3. Saat akses internet dibuka, client dilarang untuk mengakses web tanpa HTTPS. (Contoh web HTTP: http://example.com)
 Jawab:
 
 Berlint
@@ -246,23 +227,21 @@ Melakukan testing untuk validasi kode
 - Melakukan dengan HTTP
   - Mencoba koneksi
   ```
-  lynx http://its.ac.id
+  lynx http://example.com
   ```
   - Koneksi ditolak karena bukan HTTPS
-  ``` lampirkan gambar```
+  ```lampirkan gambar```
   
 - Melakukan dengan HTTPS
   - Mencoba koneksi
   ```
-  lynx https://its.ac.id
+  lynx https://example.com
   ```
   - Koneksi diterima karena HTTPS
   ```lampirkan gambar```
 
 
-### Soal 4
-Agar menghemat penggunaan, akses internet dibatasi dengan kecepatan maksimum 128 Kbps pada setiap host (Kbps = kilobit per second; lakukan pengecekan pada tiap host, ketika 2 host akses internet pada saat bersamaan, keduanya mendapatkan speed maksimal yaitu 128 Kbps)
-
+### 4. Agar menghemat penggunaan, akses internet dibatasi dengan kecepatan maksimum 128 Kbps pada setiap host (Kbps = kilobit per second; lakukan pengecekan pada tiap host, ketika 2 host akses internet pada saat bersamaan, keduanya mendapatkan speed maksimal yaitu 128 Kbps)
 Jawab:
 
 - Membuat file /etc/squid/acl.conf
@@ -295,16 +274,14 @@ include /etc/squid/acl-bandwidth.conf
   ```lampirkan gambar```
 
 
-### Soal 5
-Setelah diterapkan, ternyata peraturan nomor (4) mengganggu produktifitas saat hari kerja, dengan demikian pembatasan kecepatan hanya diberlakukan untuk pengaksesan internet pada hari libur
-
+### 5. Setelah diterapkan, ternyata peraturan nomor (4) mengganggu produktifitas saat hari kerja, dengan demikian pembatasan kecepatan hanya diberlakukan untuk pengaksesan internet pada hari libur
 Jawab:
 
 - Mengedit file /etc/squid/acl.conf
 ```
 nano /etc/squid/acl.conf
 ```
-- Menambhakan isi file
+- Menambahkan isi file
 ```
 .....
 http_access allow !WORKSITES !AVAILABLE_WORKING
