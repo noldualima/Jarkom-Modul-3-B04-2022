@@ -162,18 +162,23 @@ options {
 ```
 untuk memastikan code berjalan sesuai dengan aturan maka dilakukann pengecekan dengan melakukan ping pada setiap client :
 - SSS
+
 ![2](https://user-images.githubusercontent.com/72547769/202519788-1da00e42-2705-4f79-bd90-ab50b0ce7ec1.png)
 
 - Garden
+
 ![3](https://user-images.githubusercontent.com/72547769/202519802-f7cc9fe0-bfaf-46c7-ad30-19e4bdd7970b.png)
 
 - KemonoPark
+
 ![4](https://user-images.githubusercontent.com/72547769/202519808-840bf803-a5c1-4499-b32c-46db600d6e1a.png)
 
 - NewstonCastle
+
 ![5](https://user-images.githubusercontent.com/72547769/202519818-21da52c8-5e15-4ff6-b840-ede1876f0d13.png)
 
 - Eden
+
 ![6](https://user-images.githubusercontent.com/72547769/202519826-cdfa8ecc-12ac-41c0-a132-52dbbe14bd46.png)
 
 
