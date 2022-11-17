@@ -16,30 +16,227 @@ Link : https://docs.google.com/document/d/1asm7lgnTJxr17DxsE_McdUimPsRjesi6ZrHRp
 ## Pembahasan Soal DHCP
 ### 1. Loid bersama Franky berencana membuat peta tersebut dengan kriteria WISE sebagai DNS Server, Westalis sebagai DHCP Server, Berlint sebagai Proxy Server
 Jawab:
+![1](https://user-images.githubusercontent.com/72547769/202501594-f76803e0-cdba-48df-bce9-55224c3917b4.png)
+- (DNS Server) Wise
+network configuration
+```auto eth0
+iface eth0 inet static
+           address 10.5.2.2
+           netmask 255.255.255.0
+           gateway 10.5.2.1
+```
+Bashrc
+```
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
+apt-get update
+apt-get install bind9 -y
+```
 
+- (DHCP Server) Westalis
+network configuration
+```
+auto eth0
+iface eth0 inet static
+           address 10.5.2.4
+           netmask 255.255.255.0
+           gateway 10.5.2.1
+```
+Bashrc
+```
+apt-get update
+apt-get install isc-dhcp-server -y
+
+echo ‘
+INTERFACES=”eth0”
+‘ > /etc/default/isc-dhcp-server
+```
+- (Proxy Server) Berlint
+network configuration
+```
+auto eth0
+iface eth0 inet static
+           address 10.5.2.3
+           netmask 255.255.255.0
+           gateway 10.5.2.1
+```
+Bashrc
+```
+apt-get update
+apt-get install squid -y
+```
 
 ### 2. Ostania sebagai DHCP Relay
 Jawab:
+- (DHCP relay) Ostania
+network configuration
+```
+auto eth0
+iface eth0 inet dhcp
+
+auto eth1
+iface eth1 inet static
+       address 10.5.1.1
+       netmask 255.255.255.0
+
+auto eth2
+iface eth2 inet static
+       address 10.5.2.1
+       netmask 255.255.255.0
+
+auto eth3
+iface eth3 inet static
+      address 10.5.3.1
+      netmask 255.255.255.0
+```
+
+Bashrc
+```
+apt-get update
+apt-get install isc-dhcp-relay -y
+
+Kemudian edit file /etc/default/isc-dhcp-relay dengan menambahkan SERVER = "10.5.2.4" dan INTERFACES = "eth1 eth2 eth3"
+
+service isc-dhcp-relay restart
+```
 
 
-### 3. Ada beberapa kriteria yang ingin dibuat oleh Loid dan Franky, yaitu: Semua client yang ada HARUS menggunakan konfigurasi IP dari DHCP Server. Client yang melalui Switch1 mendapatkan range IP dari [prefix IP].1.50 - [prefix IP].1.88 dan [prefix IP].1.120 - [prefix IP].1.155 
-Jawab:
-
-
+### 3. Ada beberapa kriteria yang ingin dibuat oleh Loid dan Franky, yaitu: Semua client yang ada HARUS menggunakan konfigurasi IP dari DHCP Server. Client yang melalui Switch1 mendapatkan range IP dari [prefix IP].1.50 - [prefix IP].1.88 dan [prefix IP].1.120 - [prefix IP].1.155
 ### 4. Client yang melalui Switch3 mendapatkan range IP dari [prefix IP].3.10 - [prefix IP].3.30 dan [prefix IP].3.60 - [prefix IP].3.85
 Jawab:
 
+- (Client) SSS,Garden,KemonoPark,NewstonCastle
+network configuration
+```
+auto eth0
+iface eth0 inet dhcp
+```
+
+- (Client) Eden
+network configuration
+```
+auto eth0
+iface eth0 inet dhcp
+    hwaddress ether ca:9f:1e:08:97:97
+```
+Westalis kemudian tambahkan `INTERFACES=\"eth0\"` pada `/etc/default/isc-dhcp-server` lalu tambahkan juga
+```
+subnet 10.5.1.0 netmask 255.255.255.0 {
+    range  10.5.1.50 10.5.1.88;
+    range  10.5.1.120 10.5.1.155;
+    option routers 10.5.1.1;
+    option broadcast-address 10.5.1.255;
+    option domain-name-servers 10.5.2.2;
+}
+
+subnet 10.5.3.0 netmask 255.255.255.0 {
+    range  10.5.3.10 10.5.3.30;
+    option routers 10.5.3.1;
+    option broadcast-address 10.5.3.255;
+    option domain-name-servers 10.5.2.2;
+}
+```
+pada `/etc/dhcp/dhcpd.conf` dan jangan lupa restart `service isc-dhcp-server restart` lalu cek dengan command `ip a` pada client
+
+switch1
+![image](https://user-images.githubusercontent.com/72547769/202515381-270dd85a-a28e-4c0f-8f89-13450cd8085d.png)
+
+switch2
+![image](https://user-images.githubusercontent.com/72547769/202515489-17220708-0cc7-43a5-8bee-f2f1e9a1a781.png)
 
 ### 5. Client mendapatkan DNS dari WISE dan client dapat terhubung dengan internet melalui DNS tersebut.
 Jawab:
+pada setiap client akan mendapatkan DNS dari WISE sehingga diperlukan konfigurasi pada file /etc/dhcp/dhcpd.conf dengan isian sebagai berikut
+
+```
+option domain-name-servers 10.45.2.2;
+```
+melakukan setup pada WISE dengan melakukan editing pada file `/etc/bind/named.conf.options` dan menambahkan isian sebagai berikut :
+```
+options {
+        directory \"/var/cache/bind\";
+
+        forwarders {
+                8.8.8.8;
+                8.8.8.4;
+        };
+
+        // dnssec-validation auto;
+        allow-query { any; };
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+};
+```
+untuk memastikan code berjalan sesuai dengan aturan maka dilakukann pengecekan dengan melakukan ping pada setiap client :
+- SSS
+![2](https://user-images.githubusercontent.com/72547769/202519788-1da00e42-2705-4f79-bd90-ab50b0ce7ec1.png)
+
+- Garden
+![3](https://user-images.githubusercontent.com/72547769/202519802-f7cc9fe0-bfaf-46c7-ad30-19e4bdd7970b.png)
+
+- KemonoPark
+![4](https://user-images.githubusercontent.com/72547769/202519808-840bf803-a5c1-4499-b32c-46db600d6e1a.png)
+
+- NewstonCastle
+![5](https://user-images.githubusercontent.com/72547769/202519818-21da52c8-5e15-4ff6-b840-ede1876f0d13.png)
+
+- Eden
+![6](https://user-images.githubusercontent.com/72547769/202519826-cdfa8ecc-12ac-41c0-a132-52dbbe14bd46.png)
 
 
 ### 6. Lama waktu DHCP server meminjamkan alamat IP kepada Client yang melalui Switch1 selama 5 menit sedangkan pada client yang melalui Switch3 selama 10 menit. Dengan waktu maksimal yang dialokasikan untuk peminjaman alamat IP selama 115 menit.
 Jawab:
+Pada node Wesalis lakukan perintah sebagai berikut :
+- edit file `/etc/bind/named.conf.local` dengan cara
+```
+nano /etc/bind/named.conf.local
+```
+menyesuaikan isi file dengan
+```
+subnet 10.5.1.0 netmask 255.255.255.0 {
+    range  10.5.1.50 10.5.1.88;
+    range  10.5.1.120 10.5.1.155;
+    option routers 10.5.1.1;
+    option broadcast-address 10.5.1.255;
+    option domain-name-servers 10.5.2.2;
+    default-lease-time 300;
+    max-lease-time 6900;
+}
+
+subnet 10.5.3.0 netmask 255.255.255.0 {
+    range  10.5.3.10 10.5.3.30;
+    option routers 10.5.3.1;
+    option broadcast-address 10.5.3.255;
+    option domain-name-servers 10.5.2.2;
+    default-lease-time 600;
+    max-lease-time 6900;
+}
+```
 
 
 ### 7. Loid dan Franky berencana menjadikan Eden sebagai server untuk pertukaran informasi dengan alamat IP yang tetap dengan IP [prefix IP].3.13
 Jawab:
+Pada node Wesalis lakukan perintah sebagai berikut :
+
+- edit file /etc/bind/named.conf.local dengan cara
+```
+nano /etc/bind/named.conf.local
+```
+manambhakan isi file dengan
+```
+host Eden {
+    hardware ethernet 92:0c:bd:77:cd:85;
+    fixed-address 10.5.3.13;
+}
+ ```
+Pada node Eden melakukan konfigurasi network configuration sebagai berikut :
+```
+auto eth0
+iface eth0 inet dhcp
+    hwaddress ether ca:9f:1e:08:97:97
+```
+
+untuk melakukan validasi maka pada node Eden dilakukan pengecekan dengan menggunakan `ip a`, akan muncul hasil sebagai berikut
+![7 1](https://user-images.githubusercontent.com/72547769/202521093-4536852f-5ba9-4f72-b08d-2d0c5656826f.png)
 
 
 ## Pembahasan Soal Proxy Server
