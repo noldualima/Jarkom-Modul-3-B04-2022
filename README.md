@@ -89,15 +89,13 @@ Bashrc
 ```
 apt-get update
 apt-get install isc-dhcp-relay -y
-
-Kemudian edit file /etc/default/isc-dhcp-relay dengan menambahkan SERVER = "10.5.2.4" dan INTERFACES = "eth1 eth2 eth3"
-
+```
+Kemudian edit file `/etc/default/isc-dhcp-relay` dengan menambahkan SERVER = "10.5.2.4" dan INTERFACES = "eth1 eth2 eth3"
+```
 service isc-dhcp-relay restart
 ```
 
-
-### 3. Ada beberapa kriteria yang ingin dibuat oleh Loid dan Franky, yaitu: Semua client yang ada HARUS menggunakan konfigurasi IP dari DHCP Server. Client yang melalui Switch1 mendapatkan range IP dari [prefix IP].1.50 - [prefix IP].1.88 dan [prefix IP].1.120 - [prefix IP].1.155
-### 4. Client yang melalui Switch3 mendapatkan range IP dari [prefix IP].3.10 - [prefix IP].3.30 dan [prefix IP].3.60 - [prefix IP].3.85
+### 3 & 4. Ada beberapa kriteria yang ingin dibuat oleh Loid dan Franky, yaitu: Semua client yang ada HARUS menggunakan konfigurasi IP dari DHCP Server. Client yang melalui Switch1 mendapatkan range IP dari [prefix IP].1.50 - [prefix IP].1.88 dan [prefix IP].1.120 - [prefix IP].1.155. Client yang melalui Switch3 mendapatkan range IP dari [prefix IP].3.10 - [prefix IP].3.30 dan [prefix IP].3.60 - [prefix IP].3.85
 Jawab:
 
 - (Client) SSS,Garden,KemonoPark,NewstonCastle
