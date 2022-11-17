@@ -132,9 +132,11 @@ subnet 10.5.3.0 netmask 255.255.255.0 {
 pada `/etc/dhcp/dhcpd.conf` dan jangan lupa restart `service isc-dhcp-server restart` lalu cek dengan command `ip a` pada client
 
 switch1
+
 ![image](https://user-images.githubusercontent.com/72547769/202515381-270dd85a-a28e-4c0f-8f89-13450cd8085d.png)
 
 switch2
+
 ![image](https://user-images.githubusercontent.com/72547769/202515489-17220708-0cc7-43a5-8bee-f2f1e9a1a781.png)
 
 ### 5. Client mendapatkan DNS dari WISE dan client dapat terhubung dengan internet melalui DNS tersebut.
